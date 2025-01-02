@@ -7,10 +7,10 @@ In the "management" section, we see the start button, which is also a stop butto
 Well, the final section, it is also the most important, the search section, in which a keyword search is already taking place.
 ![image](https://github.com/user-attachments/assets/fc7ea36e-6137-4ba9-bcc0-e0ce08f8b28f)
 # Technologies and Libraries 
-Spring Framework
-Lombok
-Jsoup
-MySQL
+Spring Framework // 
+Lombok // 
+Jsoup // 
+MySQL // 
 Logger
 # Technical description
 To run this project, you must have JDK-22, MySQL installed on your PC, in which the search_engine schema must be created. Then you just run the programm in the IDE, navigate to the browser path localhost:8080 and that's it.
