@@ -14,6 +14,7 @@ import searchengine.repositories.LemmaRepository;
 import searchengine.repositories.PageRepository;
 import searchengine.repositories.SiteRepository;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +23,7 @@ import java.util.concurrent.RecursiveAction;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class CrawlTask extends RecursiveAction {
-    private static final Logger logger = LoggerFactory.getLogger(SiteIndexingService.class);
+    private static final Logger logger = LoggerFactory.getLogger(CrawlTask.class);
     private final String url;
     private final SiteModel siteModel;
     private final PageRepository pageRepository;
@@ -33,13 +34,17 @@ public class CrawlTask extends RecursiveAction {
     private final LemmaFinderService lemmaFinderService;
     private final LemmaRepository lemmaRepository;
     private final IndexRepository indexRepository;
+
     public CrawlTask(String url,
                      SiteModel siteModel,
                      PageRepository pageRepository,
                      SiteRepository siteRepository,
                      String userAgent,
                      String referrer,
-                     AtomicBoolean stopIndexing, LemmaFinderService lemmaFinderService, LemmaRepository lemmaRepository, IndexRepository indexRepository) {
+                     AtomicBoolean stopIndexing,
+                     LemmaFinderService lemmaFinderService,
+                     LemmaRepository lemmaRepository,
+                     IndexRepository indexRepository) {
         this.url = url;
         this.siteModel = siteModel;
         this.pageRepository = pageRepository;
@@ -53,7 +58,7 @@ public class CrawlTask extends RecursiveAction {
     }
 
     @Override
-    public void compute() {
+    protected void compute() {
         if (stopIndexing.get()) {
             logger.info("Индексация остановлена для URL: {}", url);
             updateSiteStatus(siteModel, SiteStatusEnum.FAILED, "Индексация остановлена пользователем");
@@ -93,7 +98,6 @@ public class CrawlTask extends RecursiveAction {
             savePageModel(pageModel);
             logger.info("Сохранение страницы: {}", pageModel);
 
-            // Извлечение лемм
             Map<String, Integer> lemmas = lemmaFinderService.collectLemmas(content);
             for (Map.Entry<String, Integer> entry : lemmas.entrySet()) {
                 String lemmaText = entry.getKey();
@@ -113,7 +117,7 @@ public class CrawlTask extends RecursiveAction {
                     indexModel.setRank(frequency);
                     indexRepository.save(indexModel);
                 } else {
-                    for(LemmaModel lemmaModel : lemmaModels) {
+                    for (LemmaModel lemmaModel : lemmaModels) {
                         lemmaModel.setFrequency(lemmaModel.getFrequency() + frequency);
                         lemmaRepository.save(lemmaModel);
 
@@ -126,17 +130,13 @@ public class CrawlTask extends RecursiveAction {
                 }
             }
 
-            // Обновление статуса сайта
             siteModel.setStatusTime(LocalDateTime.now());
             logger.info("Обновление статуса сайта: {}", siteModel);
             updateSiteStatus(siteModel, SiteStatusEnum.INDEXING, null);
 
-            // Обработка ссылок
             if (stopIndexing.get()) {
                 logger.info("Индексация остановлена перед обработкой ссылок для URL: {}", url);
-                siteModel.setLastError("Индексация остановлена пользователем");
-                siteModel.setStatusTime(LocalDateTime.now());
-                siteModel.setStatus(SiteStatusEnum.FAILED);
+                updateSiteStatus(siteModel, SiteStatusEnum.FAILED, "Индексация остановлена пользователем");
                 return;
             }
 
@@ -163,17 +163,20 @@ public class CrawlTask extends RecursiveAction {
         }
     }
 
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     private void updateSiteStatus(SiteModel siteModel, SiteStatusEnum status, String errorMessage) {
+        logger.info("Обновление статуса сайта {}: {} -> {}", siteModel.getMainUrl(), siteModel.getStatus(), status);
         siteModel.setStatus(status);
         siteModel.setStatusTime(LocalDateTime.now());
         siteModel.setLastError(errorMessage);
         siteRepository.saveAndFlush(siteModel);
     }
+
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     private void savePageModel(PageModel pageModel) {
         pageRepository.saveAndFlush(pageModel);
     }
+
     private void delay() {
         try {
             Thread.sleep(1000);

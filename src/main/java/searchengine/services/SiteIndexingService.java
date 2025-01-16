@@ -161,11 +161,11 @@ package searchengine.services;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import searchengine.config.Site;
 import searchengine.config.SitesList;
+import searchengine.dto.statistics.IndexingResponse;
 import searchengine.model.SiteModel;
 import searchengine.model.SiteStatusEnum;
 import searchengine.repositories.IndexRepository;
@@ -175,46 +175,69 @@ import searchengine.repositories.SiteRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.atomic.AtomicBoolean;
-
 
 @Service
 public class SiteIndexingService {
     private static final Logger logger = LoggerFactory.getLogger(SiteIndexingService.class);
     private final SiteRepository siteRepository;
     private final PageRepository pageRepository;
-    private final String userAgent;
-    private final String referrer;
     private final SitesList sitesList;
-    private final IndexRepository indexRepository;
+    private final AtomicBoolean stopIndexing = new AtomicBoolean(false);
     private final LemmaFinderService lemmaFinderService;
     private final LemmaRepository lemmaRepository;
-    private final AtomicBoolean stopIndexing = new AtomicBoolean(false);
+    private final IndexRepository indexRepository;
+
     public SiteIndexingService(SiteRepository siteRepository, PageRepository pageRepository,
-                               @Value("${user-agent}") String userAgent, @Value("${referrer}") String referrer, SitesList sitesList, IndexRepository indexRepository, LemmaFinderService lemmaFinderService, LemmaRepository lemmaRepository) {
+                               SitesList sitesList, LemmaFinderService lemmaFinderService,
+                               LemmaRepository lemmaRepository, IndexRepository indexRepository) {
         this.siteRepository = siteRepository;
         this.pageRepository = pageRepository;
-        this.userAgent = userAgent;
-        this.referrer = referrer;
         this.sitesList = sitesList;
-        this.indexRepository = indexRepository;
         this.lemmaFinderService = lemmaFinderService;
         this.lemmaRepository = lemmaRepository;
+        this.indexRepository = indexRepository;
     }
 
     @Async
+    public void startIndexing() {
+        resetStopIndexing();
+
+        List<CompletableFuture<Void>> futures = new ArrayList<>();
+
+        for (Site siteConfig : sitesList.getSites()) {
+            String siteUrl = siteConfig.getUrl();
+            SiteModel siteModel = siteRepository.findByMainUrl(siteUrl);
+
+            if (siteModel != null && siteModel.getStatus() == SiteStatusEnum.INDEXING) {
+                logger.warn("Индексация уже запущена для сайта: {}", siteUrl);
+                continue;
+            }
+
+            futures.add(CompletableFuture.runAsync(() -> indexSite(siteUrl)));
+        }
+
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+    }
+
+    @Transactional
     public void indexSite(String siteUrl) {
         logger.info("Начало индексации сайта: {}", siteUrl);
         SiteModel siteModel = null;
         try {
             deleteExistingData(siteUrl);
             siteModel = createSiteRecord(siteUrl);
+
             ForkJoinPool forkJoinPool = new ForkJoinPool();
-            forkJoinPool.invoke(new CrawlTask(siteUrl, siteModel, pageRepository, siteRepository, userAgent, referrer, stopIndexing, lemmaFinderService ,lemmaRepository, indexRepository));
-            if(!stopIndexing.get()) {
+            forkJoinPool.invoke(new CrawlTask(siteUrl, siteModel, pageRepository, siteRepository,
+                    "userAgent", "referrer", stopIndexing, lemmaFinderService, lemmaRepository, indexRepository));
+
+            if (!stopIndexing.get()) {
                 updateSiteStatus(siteModel, SiteStatusEnum.INDEXED, null);
             }
         } catch (Exception e) {
@@ -224,29 +247,24 @@ public class SiteIndexingService {
             }
         }
     }
+
     public void stopIndexing() {
         stopIndexing.set(true);
         logger.info("Индексация остановлена");
-//        List<SiteModel> sites = siteRepository.findAll();
-//        for (SiteModel site : sites) {
-//            if (site.getStatus() == SiteStatusEnum.INDEXING) {
-//                updateSiteStatus(site, SiteStatusEnum.FAILED, "Индексация остановлена пользователем");
-//                logger.info("Статус сайта {} обновлен на FAILED", site.getMainUrl());
-//            }
-//        }
     }
+
     @Transactional
-    public void deleteExistingData(String site){
+    public void deleteExistingData(String site) {
         Optional<SiteModel> existingSiteOpt = Optional.ofNullable(siteRepository.findByMainUrl(site));
         existingSiteOpt.ifPresent(siteRepository::delete);
     }
-    @Transactional
-    private SiteModel createSiteRecord(String site){
+
+    private SiteModel createSiteRecord(String site) {
         Site siteConfig = sitesList.getSites().stream()
                 .filter(s -> s.getUrl().equalsIgnoreCase(site))
                 .findFirst()
                 .orElse(null);
-        if(siteConfig == null){
+        if (siteConfig == null) {
             throw new IllegalArgumentException("Сайта не найдено в конфигурации");
         }
         SiteModel siteModel = new SiteModel();
@@ -256,8 +274,9 @@ public class SiteIndexingService {
         siteModel.setStatusTime(LocalDateTime.now());
         return siteRepository.save(siteModel);
     }
+
     @Transactional
-    public void updateSiteStatus(SiteModel siteModel, SiteStatusEnum status, String errorMessage){
+    public void updateSiteStatus(SiteModel siteModel, SiteStatusEnum status, String errorMessage) {
         siteModel.setStatus(status);
         siteModel.setStatusTime(LocalDateTime.now());
         siteModel.setLastError(errorMessage);
@@ -266,13 +285,10 @@ public class SiteIndexingService {
 
     public boolean isIndexing() {
         List<SiteModel> sites = siteRepository.findAll();
-        return sites
-                .stream()
-                .anyMatch(site -> site.getStatus() == SiteStatusEnum.INDEXING);
+        return sites.stream().anyMatch(site -> site.getStatus() == SiteStatusEnum.INDEXING);
     }
 
     public void resetStopIndexing() {
         stopIndexing.set(false);
     }
-
 }

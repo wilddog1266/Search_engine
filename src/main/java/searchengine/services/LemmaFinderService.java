@@ -51,6 +51,17 @@ public class LemmaFinderService {
 
         return lemmas;
     }
+
+    public boolean isStopWord(String word) {
+        if (word == null || word.isBlank()) {
+            return false;
+        }
+
+        List<String> wordBaseForms = luceneMorphology.getMorphInfo(word);
+
+        return anyWordBaseBelongToParticle(wordBaseForms);
+    }
+
     public Set<String> getLemmaSet(String text) {
         String[] textArray = arrayContainsRussianWords(text);
         Set<String> lemmaSet = new HashSet<>();

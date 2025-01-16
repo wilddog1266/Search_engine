@@ -4,7 +4,31 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="334924d8-9081-4842-9215-fcac458b722f" name="Changes" comment="Предположительно дедлок в методе savePageModel в классе CrawlTask" />
+    <list default="true" id="334924d8-9081-4842-9215-fcac458b722f" name="Changes" comment="Предположительно дедлок в методе savePageModel в классе CrawlTask">
+      <change afterPath="$PROJECT_DIR$/src/main/java/searchengine/dto/statistics/ApiResponse.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/searchengine/dto/statistics/IndexingResponse.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/searchengine/dto/statistics/SearchResponse.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/searchengine/dto/statistics/SearchResult.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/searchengine/services/PageIndexingService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/searchengine/services/SearchService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/searchengine/TestMorph.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/searchengine/controllers/ApiController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/searchengine/controllers/ApiController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/searchengine/dto/statistics/DetailedStatisticsItem.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/searchengine/dto/statistics/DetailedStatisticsItem.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/searchengine/dto/statistics/StatisticsResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/searchengine/dto/statistics/StatisticsResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/searchengine/repositories/PageRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/searchengine/repositories/PageRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/searchengine/services/CrawlTask.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/searchengine/services/CrawlTask.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/searchengine/services/PageService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/searchengine/services/PageService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/searchengine/services/SiteIndexingService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/searchengine/services/SiteIndexingService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/searchengine/services/StatisticsService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/searchengine/services/StatisticsService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/searchengine/services/StatisticsServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/searchengine/services/StatisticsServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/searchengine/TestMorph.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/searchengine/controllers/ApiController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/searchengine/controllers/ApiController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/searchengine/dto/statistics/DetailedStatisticsItem.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/searchengine/dto/statistics/DetailedStatisticsItem.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/searchengine/services/CrawlTask.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/searchengine/services/CrawlTask.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/searchengine/services/SiteIndexingService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/searchengine/services/SiteIndexingService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/searchengine/services/StatisticsServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/searchengine/services/StatisticsServiceImpl.class" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -20,14 +44,18 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Enum" />
-        <option value="Class" />
         <option value="Interface" />
+        <option value="Class" />
       </list>
     </option>
   </component>
+  <component name="Git.Rebase.Settings">
+    <option name="NEW_BASE" value="master" />
+  </component>
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
     <option name="RESET_MODE" value="MIXED" />
+    <option name="ROOT_SYNC" value="SYNC" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 5
@@ -38,22 +66,22 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Application.Application.executor": "Run",
-    "Application.TestMorph.executor": "Run",
-    "JUnit.CrawlTaskTest.executor": "Run",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "master",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/12560/OneDrive/Рабочий стол/Курсы Java/java_basics/search_engine/libs/morphology/russian/1.5/russian-1.5.jar",
-    "project.structure.last.edited": "Project",
-    "project.structure.proportion": "0.0",
-    "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "configurable.group.appearance"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.Application.executor&quot;: &quot;Run&quot;,
+    &quot;Application.TestMorph.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.CrawlTaskTest.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/12560/OneDrive/Рабочий стол/тест/search_engine&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;configurable.group.appearance&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\12560\OneDrive\Рабочий стол\Курсы Java\java_basics\search_engine" />

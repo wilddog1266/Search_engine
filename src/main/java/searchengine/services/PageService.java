@@ -55,7 +55,6 @@ public class PageService {
         try {
             doc = Jsoup.connect(siteUrl + path).get();
         } catch (IOException e) {
-            // Обработка ошибок HTTP
             throw new IOException("Ошибка при получении страницы: " + e.getMessage());
         }
         String html = doc.html();
@@ -128,4 +127,6 @@ public class PageService {
         Element h1Element = doc.selectFirst("h1");
         return (h1Element != null) ? h1Element.text() : "Заголовка нет";
     }
+
+
 }
