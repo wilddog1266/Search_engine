@@ -13,4 +13,4 @@ Jsoup //
 MySQL // 
 Logger
 # Technical description
-To run this project, you must have JDK-22, MySQL installed on your PC, in which the search_engine schema must be created. Then you just run the programm in the IDE, navigate to the browser path localhost:8080 and that's it.
+To run this project, you must have JDK-17, MySQL installed on your PC, in which the search_engine schema must be created. Then you just run the programm in the IDE, navigate to the browser path localhost:8080 and that's it.
